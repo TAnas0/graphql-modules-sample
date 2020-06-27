@@ -3,7 +3,15 @@ import gql from 'graphql-tag';
 import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
 
-export const FirstModule = new GraphQLModule({
+const FirstModule = new GraphQLModule({
+  typeDefs: gql`
+    interface Node {
+      id: ID!
+    }
+  `
+});
+
+const SecondModule = new GraphQLModule({
   typeDefs: gql`
     type Query {
       books: [Book]
@@ -13,24 +21,15 @@ export const FirstModule = new GraphQLModule({
       id: ID!
       title: String
     }
-  `
+  `,
+  imports: [FirstModule]
 })
-
-export const SecondModule = new GraphQLModule({
-  typeDefs: gql`
-    interface Node {
-      id: ID!
-    }
-  `
-});
-
-
 
 
 const app = express();
 
 app.use('/graphql', graphqlHTTP({
-  schema: FirstModule.schema,
+  schema: SecondModule.schema,
   graphiql: true
 }));
 
